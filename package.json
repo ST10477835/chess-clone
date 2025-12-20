@@ -6,12 +6,10 @@
   "homepage": "https://st10477835.github.io/chess-clone/",
   "scripts": {
     "dev": "vite",
-    "build": "react-scripts build",
-    "lint": "eslint .",
+    "build": "vite build",
     "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist",
-    "start": "react-scripts start"
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "react": "^19.2.0",
