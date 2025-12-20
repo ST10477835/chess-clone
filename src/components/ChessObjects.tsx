@@ -6,64 +6,64 @@ export interface Pieces {
 }
 export const blank: Pieces = { src: null, color: "", curr_pos: "" };
 const pawn_b: Pieces = {
-  src: "src/assets/pawn-b.svg",
+  src: "/chess-clone/assets/pawn-b.svg",
   color: "black",
   curr_pos: "",
   first_move: false,
 };
 const pawn_w: Pieces = {
-  src: "src/assets/pawn-w.svg",
+  src: "/chess-clone/assets/pawn-w.svg",
   color: "white",
   curr_pos: "",
   first_move: false,
 };
 const rook_b: Pieces = {
-  src: "src/assets/rook-b.svg",
+  src: "/chess-clone/assets/rook-b.svg",
   color: "black",
   curr_pos: "",
 };
 const rook_w: Pieces = {
-  src: "src/assets/rook-w.svg",
+  src: "/chess-clone/assets/rook-w.svg",
   color: "white",
   curr_pos: "",
 };
 const knight_b: Pieces = {
-  src: "src/assets/knight-b.svg",
+  src: "/chess-clone/assets/knight-b.svg",
   color: "black",
   curr_pos: "",
 };
 const knight_w: Pieces = {
-  src: "src/assets/knight-w.svg",
+  src: "/chess-clone/assets/knight-w.svg",
   color: "white",
   curr_pos: "",
 };
 const bishop_b: Pieces = {
-  src: "src/assets/bishop-b.svg",
+  src: "/chess-clone/assets/bishop-b.svg",
   color: "black",
   curr_pos: "",
 };
 const bishop_w: Pieces = {
-  src: "src/assets/bishop-w.svg",
+  src: "/chess-clone/assets/bishop-w.svg",
   color: "white",
   curr_pos: "",
 };
 const queen_b: Pieces = {
-  src: "src/assets/queen-b.svg",
+  src: "/chess-clone/assets/queen-b.svg",
   color: "black",
   curr_pos: "",
 };
 const queen_w: Pieces = {
-  src: "src/assets/queen-w.svg",
+  src: "/chess-clone/assets/queen-w.svg",
   color: "white",
   curr_pos: "",
 };
 const king_b: Pieces = {
-  src: "src/assets/king-b.svg",
+  src: "/chess-clone/assets/king-b.svg",
   color: "black",
   curr_pos: "",
 };
 const king_w: Pieces = {
-  src: "src/assets/king-w.svg",
+  src: "/chess-clone/assets/king-w.svg",
   color: "white",
   curr_pos: "",
 };
