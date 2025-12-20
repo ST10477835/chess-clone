@@ -1,4 +1,3 @@
-import "./App.css";
 import { ChessBoard } from "./components/ChessBoard.tsx";
 
 function App() {
