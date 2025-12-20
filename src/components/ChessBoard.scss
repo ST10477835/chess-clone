@@ -1,0 +1,63 @@
+body {
+  background: url("./src/assets/wallpaper.jpg") no-repeat center center fixed;
+  background-size: cover;
+}
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 10px solid;
+  gap: 10px;
+
+  .player {
+    border: 10px solid;
+    margin: 10px;
+    padding: 10px;
+    width: 95%;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+
+    img {
+      width: 55px;
+      height: 55px;
+      border: 1px solid;
+      border-radius: 10px;
+    }
+  }
+  .board {
+    display: flex;
+    flex-direction: column;
+    .rank {
+      display: flex;
+      .square {
+        border: 1px solid;
+        padding: 5px;
+        min-width: 55px;
+        min-height: 55px;
+        position: relative;
+        .fileLabel {
+          position: absolute;
+          top: 0;
+          left: 1;
+        }
+        .rankLabel {
+          position: absolute;
+          bottom: 0;
+          right: 0;
+        }
+        img {
+          max-width: 50px;
+          max-height: 50px;
+          src: "";
+        }
+      }
+      .light {
+        background: #96683b;
+      }
+      .dark {
+        background: #663300;
+      }
+    }
+  }
+}
