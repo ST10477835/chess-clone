@@ -395,7 +395,7 @@ export const ChessBoard = () => {
     <>
       <div className="main">
         <div className="player">
-          <img src="./src/assets/chesspfp.png" alt="" />
+          <img src="/chess-clone/assets/chesspfp.png" alt="" />
           Player 2
         </div>
         <div className="board">
@@ -429,7 +429,7 @@ export const ChessBoard = () => {
           ))}
         </div>
         <div className="player">
-          <img src="./src/assets/chesspfp.png" alt="" />
+          <img src="/chess-clone/assets/chesspfp.png" alt="" />
           Player 1
         </div>
       </div>
