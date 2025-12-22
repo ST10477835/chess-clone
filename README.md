@@ -1,73 +1,135 @@
-# React + TypeScript + Vite
+# Chess Clone (React + TypeScript)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This project is a **basic chess clone** implemented using **React** and **TypeScript**. It focuses on rendering a chessboard, displaying pieces, and allowing drag-and-drop movement with simple, rule-based validation per piece.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Overview
 
-## React Compiler
+The `ChessBoard` component dynamically generates an 8×8 chessboard and manages piece movement using React state. Each square knows its position, color, and which piece it contains. Movement logic is handled manually for each piece type.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+This project is intended as a **learning exercise**, not a full chess engine.
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Features
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+* 8×8 chessboard rendered dynamically
+* Light and dark square coloring
+* SVG chess pieces
+* Drag-and-drop piece movement
+* Basic move validation for:
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+  * Pawn
+  * Rook
+  * Knight
+  * Bishop
+  * Queen
+  * King
+* Board orientation based on player color (white/black)
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+---
+
+## How the Code Works
+
+### Board Setup
+
+* The board is built using nested loops over ranks and files.
+* Each square is represented by a `Square` object:
+
+```ts
+interface Square {
+  id: string;     // e.g. "1a"
+  pos: string;    // array index position (e.g. "00")
+  color: string;  // "light" or "dark"
+  piece: Pieces;
+}
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+* Squares are stored in a 2D array (`Square[][]`).
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+---
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### Piece State
+
+* `currPieces` stores the current piece layout as a 2D array
+* Initial pieces are loaded from `ChessObjects.ts`
+* Pieces are swapped by cloning the board state and updating it immutably
+
+---
+
+### Movement Validation
+
+Movement rules are implemented in the `conditions` function using a `switch` statement based on the piece’s SVG source:
+
+* **Pawn**: moves forward 1 square, or 2 squares from starting rank
+* **Rook**: horizontal or vertical movement
+* **Knight**: L-shaped movement
+* **Bishop**: diagonal movement
+* **Queen**: combination of rook and bishop movement
+* **King**: one square in any direction
+
+Only moves to **empty squares** are currently allowed.
+
+---
+
+### Drag and Drop Logic
+
+* Drag start stores the starting square position
+* Drag over updates the current target square
+* Drag end validates the move and swaps pieces if valid
+
+Uses native HTML drag events:
+
+* `onDragStart`
+* `onDragOver`
+* `onDragEnd`
+
+---
+
+## Limitations
+
+This chess clone does **not** currently support:
+
+* Capturing opponent pieces
+* Turn switching
+* Check or checkmate detection
+* Castling
+* En passant
+* Pawn promotion
+* Path blocking (pieces can jump through others except knights)
+
+---
+
+## Tech Stack
+
+* React
+* TypeScript
+* SCSS
+
+---
+
+## Purpose
+
+This project was built to:
+
+* Practice React state management
+* Learn drag-and-drop interactions
+* Implement rule-based logic in TypeScript
+* Understand 2D array board representations
+
+---
+
+## Future Improvements
+
+* Implement capturing logic
+* Add turn-based movement
+* Prevent illegal path traversal
+* Add check and checkmate detection
+* Improve UI and animations
+
+---
+
+## License
+
+This project is for educational purposes.
