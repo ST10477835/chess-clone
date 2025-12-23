@@ -7,6 +7,7 @@ import {
   currPieces,
 } from "./Logic";
 export const ChessBoard = () => {
+  console.log("working");
   setup();
   return (
     <>

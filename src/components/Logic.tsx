@@ -8,7 +8,7 @@ interface Square {
   color: string;
   piece: Pieces;
 }
-const [isWhite] = useState(true);
+const [isWhite] = useState<true | false | null>(true);
 const [currPos, setCurrPos] = useState("");
 
 export const board: Square[][] = [];
