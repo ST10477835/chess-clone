@@ -1,0 +1,43 @@
+body {
+  margin: 0;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+.board {
+  border: 10px solid;
+  display: flex;
+  height: 500px;
+  width: 500px;
+  justify-content: center;
+  flex-direction: column;
+
+  .rank {
+    display: flex;
+    flex-grow: 1;
+    justify-content: center;
+    .file {
+      width: 12.5%;
+      display: flex;
+      justify-content: center;
+      min-width: 55px;
+      min-height: 55px;
+      position: relative;
+      align-items: center;
+      img {
+        max-width: 50px;
+        max-height: 50px;
+      }
+    }
+    .white {
+      background: white;
+    }
+    .black {
+      background: black;
+      color: white;
+    }
+  }
+}
