@@ -58,10 +58,6 @@ const Chess = () => {
 
     canMove(start, end) && swap(start, end);
   };
-  const detectCollision = (
-    start: { i: number; j: number },
-    end: { i: number; j: number },
-  ) => {};
   const canMove = (
     start: { i: number; j: number },
     end: { i: number; j: number },
@@ -76,17 +72,28 @@ const Chess = () => {
       case "pawn":
         const rowDiff = start.i - end.i;
         const maxMove = start.i === 6 ? 2 : 1;
-        let pawnCondition1 = rowDiff <= maxMove && rowDiff > 0;
-        let pawnCondition2 = start.j === end.j;
+        const pawnCondition1 = rowDiff <= maxMove && rowDiff > 0;
+        const pawnCondition2 = start.j === end.j;
+        const pawnCondition3 = checkPawnCollisions(start, end);
+        console.log(pawnCondition3);
+        //piece taking logic
 
-        return pawnCondition1 && pawnCondition2;
+        const pawnCondition4 =
+          end.i === start.i - 1 &&
+          (end.j === start.j - 1 || end.j === start.j + 1) &&
+          piece2Name !== undefined;
+        return (
+          (pawnCondition1 && pawnCondition2 && pawnCondition3) || pawnCondition4
+        );
         break;
       case "rook":
         const rookCondition1 = start.i === end.i;
         const rookCondition2 = start.j === end.j;
+        const rookCondition3 = checkRookCollisions(start, end);
         return (
-          (rookCondition1 && !rookCondition2) ||
-          (!rookCondition1 && rookCondition2)
+          ((rookCondition1 && !rookCondition2) ||
+            (!rookCondition1 && rookCondition2)) &&
+          rookCondition3
         );
         break;
       case "knight":
@@ -98,16 +105,21 @@ const Chess = () => {
         return knightCondition1 || knightCondition2;
         break;
       case "bishop":
-        const bishopCondition =
+        const bishopCondition1 =
           Math.abs(start.i - end.i) === Math.abs(start.j - end.j);
-        return bishopCondition;
+        const bishopCondition2 = checkBishopCollisions(start, end);
+        return bishopCondition1 && bishopCondition2;
         break;
       case "queen":
         const queenCondition1 =
           Math.abs(start.i - end.i) === Math.abs(start.j - end.j);
-        const queenCondition2 = start.i === end.i;
-        const queenCondition3 = start.j === end.j;
-        return queenCondition1 || queenCondition2 || queenCondition3;
+        const queenCondition2 = start.i === end.i || start.j === end.j;
+        const queenCondition3 = checkBishopCollisions(start, end);
+        const queenCondition4 = checkRookCollisions(start, end);
+        return (
+          (queenCondition1 && queenCondition3) ||
+          (queenCondition2 && queenCondition4)
+        );
         break;
       case "king":
         const kingCondition1 =
@@ -117,6 +129,73 @@ const Chess = () => {
         return kingCondition1 || kingCondition2;
         break;
     }
+  };
+  const checkPawnCollisions = (
+    start: { i: number; j: number },
+    end: { i: number; j: number },
+  ) => {
+    if (Math.abs(start.i - end.i) === 2) {
+      return !currentBoard[start.i - 1][start.j].src;
+    } else {
+      return !currentBoard[end.i][end.j].src;
+    }
+  };
+  const checkRookCollisions = (
+    start: { i: number; j: number },
+    end: { i: number; j: number },
+  ) => {
+    const rookCondition1 = start.i === end.i;
+    const rookCondition2 = start.j === end.j;
+    if (rookCondition1 && !rookCondition2) {
+      if (end.j < start.j) {
+        for (let j = end.j + 1; j < start.j; j++) {
+          if (currentBoard[start.i][j].src) {
+            return false;
+          }
+        }
+        return true;
+      } else {
+        for (let j = start.j + 1; j < end.j; j++) {
+          if (currentBoard[start.i][j].src) {
+            return false;
+          }
+        }
+        return true;
+      }
+    } else {
+      if (end.i < start.i) {
+        for (let i = end.i + 1; i < start.i; i++) {
+          if (currentBoard[i][start.j].src) {
+            return false;
+          }
+        }
+        return true;
+      } else {
+        for (let i = start.i + 1; i < end.i; i++) {
+          if (currentBoard[i][start.j].src) {
+            return false;
+          }
+        }
+        return true;
+      }
+    }
+  };
+  const checkBishopCollisions = (
+    start: { i: number; j: number },
+    end: { i: number; j: number },
+  ) => {
+    const iStep = end.i > start.i ? 1 : -1;
+    const jStep = end.j > start.j ? 1 : -1;
+
+    let i = start.i + iStep;
+    let j = start.j + jStep;
+
+    while (i !== end.i && j !== end.j) {
+      if (currentBoard[i][j].src) return false;
+      i += iStep;
+      j += jStep;
+    }
+    return true;
   };
   const swap = (
     start: { i: number; j: number },
