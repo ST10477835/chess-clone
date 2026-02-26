@@ -14,7 +14,7 @@ const Chess = () => {
   const [currentBoard, setCurrentBoard] = useState<Square[][]>([]);
   //drag related variables
   const startingCoordinatesRef = useRef<{ i: number; j: number } | null>(null);
-
+  const currentKingPosition = useRef<{ i: number; j: number }>({ i: 7, j: 4 });
   /*
   const [startingPosition, setStartingPosition] = useState<Square>();
   const [endingPosition, setEndingPosition] = useState<Square>();
@@ -66,34 +66,48 @@ const Chess = () => {
     const piece1Name = piece1.src?.substring(11, piece1.src?.length - 6);
 
     const piece2: Pieces = currentBoard[end.i][end.j];
-    const piece2Name = piece2.src?.substring(11, piece2.src?.length - 6);
+    const piece2Name = piece2.src?.substring(11, piece2.src?.length - 4);
 
     switch (piece1Name) {
       case "pawn":
         const rowDiff = start.i - end.i;
         const maxMove = start.i === 6 ? 2 : 1;
-        const pawnCondition1 = rowDiff <= maxMove && rowDiff > 0;
-        const pawnCondition2 = start.j === end.j;
-        const pawnCondition3 = checkPawnCollisions(start, end);
-        console.log(pawnCondition3);
+        const pawnCondition1 = rowDiff <= maxMove && rowDiff > 0; //either move 1 or 2
+        const pawnCondition2 = start.j === end.j; //same column
+        const pawnCondition3 = checkPawnCollisions(start, end); //checks collisions
+
         //piece taking logic
 
         const pawnCondition4 =
-          end.i === start.i - 1 &&
-          (end.j === start.j - 1 || end.j === start.j + 1) &&
-          piece2Name !== undefined;
+          Math.abs(start.i - end.i) && Math.abs(start.j - end.j)
+            ? piece2Name?.includes("-b")
+              ? true
+              : false
+            : false;
+        if (pawnCondition4) {
+          currentBoard[end.i][end.j].src = null;
+        }
         return (
-          (pawnCondition1 && pawnCondition2 && pawnCondition3) || pawnCondition4
+          (pawnCondition1 &&
+            pawnCondition2 &&
+            pawnCondition3 &&
+            piece2Name === undefined) ||
+          pawnCondition4
         );
         break;
       case "rook":
         const rookCondition1 = start.i === end.i;
         const rookCondition2 = start.j === end.j;
         const rookCondition3 = checkRookCollisions(start, end);
+        const rookCondition4 = piece2Name?.includes("-b");
+        if (rookCondition4) {
+          currentBoard[end.i][end.j].src = null;
+        }
         return (
           ((rookCondition1 && !rookCondition2) ||
             (!rookCondition1 && rookCondition2)) &&
-          rookCondition3
+          rookCondition3 &&
+          (piece2Name === undefined || rookCondition4)
         );
         break;
       case "knight":
@@ -101,14 +115,28 @@ const Chess = () => {
           Math.abs(start.i - end.i) === 1 && Math.abs(start.j - end.j) === 2;
         const knightCondition2 =
           Math.abs(start.j - end.j) === 1 && Math.abs(start.i - end.i) === 2;
-
-        return knightCondition1 || knightCondition2;
+        const knightCondition3 = piece2Name?.includes("-b");
+        if (knightCondition3) {
+          currentBoard[end.i][end.j].src = null;
+        }
+        return (
+          (knightCondition1 || knightCondition2) &&
+          (piece2Name === undefined || knightCondition3)
+        );
         break;
       case "bishop":
         const bishopCondition1 =
           Math.abs(start.i - end.i) === Math.abs(start.j - end.j);
         const bishopCondition2 = checkBishopCollisions(start, end);
-        return bishopCondition1 && bishopCondition2;
+        const bishopCondition3 = piece2Name?.includes("-b");
+        if (bishopCondition3) {
+          currentBoard[end.i][end.j].src = null;
+        }
+        return (
+          bishopCondition1 &&
+          bishopCondition2 &&
+          (piece2Name === undefined || bishopCondition3)
+        );
         break;
       case "queen":
         const queenCondition1 =
@@ -116,9 +144,14 @@ const Chess = () => {
         const queenCondition2 = start.i === end.i || start.j === end.j;
         const queenCondition3 = checkBishopCollisions(start, end);
         const queenCondition4 = checkRookCollisions(start, end);
+        const queenCondition5 = piece2Name?.includes("-b");
+        if (queenCondition5) {
+          currentBoard[end.i][end.j].src = null;
+        }
         return (
-          (queenCondition1 && queenCondition3) ||
-          (queenCondition2 && queenCondition4)
+          ((queenCondition1 && queenCondition3) ||
+            (queenCondition2 && queenCondition4)) &&
+          (piece2Name === undefined || queenCondition5)
         );
         break;
       case "king":
@@ -126,7 +159,17 @@ const Chess = () => {
           start.i === end.i && Math.abs(start.j - end.j) === 1;
         const kingCondition2 =
           start.j === end.j && Math.abs(start.i - end.i) === 1;
-        return kingCondition1 || kingCondition2;
+        const kingCondition3 =
+          Math.abs(start.i - end.i) === 1 && Math.abs(start.j - end.j) === 1;
+        const kingCondition4 = piece2Name?.includes("-b");
+        if (kingCondition4) {
+          currentBoard[end.i][end.j].src = null;
+        }
+        return (
+          kingCondition1 ||
+          kingCondition2 ||
+          (kingCondition3 && (piece2Name === undefined || kingCondition4))
+        );
         break;
     }
   };
@@ -201,6 +244,9 @@ const Chess = () => {
     start: { i: number; j: number },
     end: { i: number; j: number },
   ) => {
+    if (currentBoard[start.i][start.j].src?.includes("king")) {
+      currentKingPosition.current = { i: end.i, j: end.j };
+    }
     const newBoard = currentBoard.map((row) => [...row]);
 
     const piece = newBoard[start.i][start.j].src;
@@ -210,6 +256,9 @@ const Chess = () => {
 
     setCurrentBoard(newBoard);
     startingCoordinatesRef.current = null;
+    console.log(
+      `king position:${currentKingPosition.current.i}, ${currentKingPosition.current.j}`,
+    );
   };
   return (
     <>
