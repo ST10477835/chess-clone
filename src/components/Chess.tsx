@@ -256,9 +256,118 @@ const Chess = () => {
 
     setCurrentBoard(newBoard);
     startingCoordinatesRef.current = null;
-    console.log(
-      `king position:${currentKingPosition.current.i}, ${currentKingPosition.current.j}`,
-    );
+
+    const cki = currentKingPosition.current.i;
+    const ckj = currentKingPosition.current.j;
+    isInHorizontalCheck(cki, ckj);
+    isInVerticalCheck(cki, ckj);
+    isInDiagonalCheck(cki, ckj);
+  };
+  const isInHorizontalCheck = (cki: number, ckj: number) => {
+    //horizontals
+    let j = ckj + 1;
+    while (j < 8) {
+      //right
+      const name = currentBoard[cki][j].src;
+      if (name?.includes("queen-b") || name?.includes("rook-b")) {
+        console.log("check");
+        return false;
+        console.log(`${name} , [${cki}][${j}]`);
+      }
+      j++;
+    }
+    j = ckj - 1;
+    while (j >= 0) {
+      //left
+      const name = currentBoard[cki][j].src;
+      if (name?.includes("queen-b") || name?.includes("rook-b")) {
+        console.log("check");
+        return false;
+        console.log(`${name} , [${cki}][${j}]`);
+      }
+      j--;
+    }
+    return true;
+  };
+  const isInVerticalCheck = (cki: number, ckj: number) => {
+    let i = cki + 1;
+    while (i < 8) {
+      //down
+      const name = currentBoard[i][ckj].src;
+      if (name?.includes("queen-b") || name?.includes("rook-b")) {
+        console.log("check");
+        return false;
+        console.log(`${name} , [${i}][${ckj}]`);
+      }
+      i++;
+    }
+    i = cki - 1;
+    while (i >= 0) {
+      //up
+      const name = currentBoard[i][ckj].src;
+      if (name?.includes("queen-b") || name?.includes("rook-b")) {
+        console.log("check");
+        return false;
+        console.log(`${name} , [${i}][${ckj}]`);
+      }
+      i--;
+    }
+    return true;
+  };
+  const isInDiagonalCheck = (cki: number, ckj: number) => {
+    let i = cki + 1;
+    let j = ckj + 1;
+    while (i < 8 && j < 8) {
+      //right-down
+      const name = currentBoard[i][j].src;
+      if (name?.includes("queen-b") || name?.includes("bishop-b")) {
+        console.log("check");
+        return false;
+        console.log(`${name} , [${i}][${j}]`);
+      }
+      i++;
+      j++;
+    }
+    i = cki - 1;
+    j = ckj + 1;
+    while (i >= 0 && j < 8) {
+      //right-up
+      const name = currentBoard[i][j].src;
+      if (name?.includes("queen-b") || name?.includes("bishop-b")) {
+        console.log("check");
+        return false;
+        console.log(`${name} , [${i}][${j}]`);
+      }
+      i--;
+      j++;
+    }
+    //left down
+    i = cki + 1;
+    j = ckj - 1;
+    while (i < 8 && j >= 0) {
+      const name = currentBoard[i][j].src;
+      if (name?.includes("queen-b") || name?.includes("bishop-b")) {
+        console.log("check");
+        return false;
+        console.log(`${name} , [${i}][${j}]`);
+      }
+      i++;
+      j--;
+    }
+    //left up
+    i = cki - 1;
+    j = ckj - 1;
+    while (i >= 0 && j >= 0) {
+      const name = currentBoard[i][j].src;
+      if (name?.includes("queen-b") || name?.includes("bishop-b")) {
+        console.log("check");
+        return false;
+        console.log(`${name} , [${i}][${j}]`);
+      }
+      i--;
+      j--;
+    }
+    return true;
   };
   return (
     <>
