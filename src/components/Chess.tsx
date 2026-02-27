@@ -262,6 +262,7 @@ const Chess = () => {
     isInHorizontalCheck(cki, ckj);
     isInVerticalCheck(cki, ckj);
     isInDiagonalCheck(cki, ckj);
+    isInKnightCheck(cki, ckj);
   };
   const isInHorizontalCheck = (cki: number, ckj: number) => {
     //horizontals
@@ -271,8 +272,8 @@ const Chess = () => {
       const name = currentBoard[cki][j].src;
       if (name?.includes("queen-b") || name?.includes("rook-b")) {
         console.log("check");
-        return false;
         console.log(`${name} , [${cki}][${j}]`);
+        return false;
       }
       j++;
     }
@@ -282,8 +283,8 @@ const Chess = () => {
       const name = currentBoard[cki][j].src;
       if (name?.includes("queen-b") || name?.includes("rook-b")) {
         console.log("check");
-        return false;
         console.log(`${name} , [${cki}][${j}]`);
+        return false;
       }
       j--;
     }
@@ -296,8 +297,8 @@ const Chess = () => {
       const name = currentBoard[i][ckj].src;
       if (name?.includes("queen-b") || name?.includes("rook-b")) {
         console.log("check");
-        return false;
         console.log(`${name} , [${i}][${ckj}]`);
+        return false;
       }
       i++;
     }
@@ -307,8 +308,8 @@ const Chess = () => {
       const name = currentBoard[i][ckj].src;
       if (name?.includes("queen-b") || name?.includes("rook-b")) {
         console.log("check");
-        return false;
         console.log(`${name} , [${i}][${ckj}]`);
+        return false;
       }
       i--;
     }
@@ -322,8 +323,8 @@ const Chess = () => {
       const name = currentBoard[i][j].src;
       if (name?.includes("queen-b") || name?.includes("bishop-b")) {
         console.log("check");
-        return false;
         console.log(`${name} , [${i}][${j}]`);
+        return false;
       }
       i++;
       j++;
@@ -335,8 +336,8 @@ const Chess = () => {
       const name = currentBoard[i][j].src;
       if (name?.includes("queen-b") || name?.includes("bishop-b")) {
         console.log("check");
-        return false;
         console.log(`${name} , [${i}][${j}]`);
+        return false;
       }
       i--;
       j++;
@@ -348,8 +349,8 @@ const Chess = () => {
       const name = currentBoard[i][j].src;
       if (name?.includes("queen-b") || name?.includes("bishop-b")) {
         console.log("check");
-        return false;
         console.log(`${name} , [${i}][${j}]`);
+        return false;
       }
       i++;
       j--;
@@ -361,11 +362,38 @@ const Chess = () => {
       const name = currentBoard[i][j].src;
       if (name?.includes("queen-b") || name?.includes("bishop-b")) {
         console.log("check");
-        return false;
         console.log(`${name} , [${i}][${j}]`);
+        return false;
       }
       i--;
       j--;
+    }
+    return true;
+  };
+  const isInKnightCheck = (cki: number, ckj: number) => {
+    const moves = [
+      [-2, -1],
+      [-2, 1],
+      [-1, -2],
+      [-1, 2],
+      [1, -2],
+      [1, 2],
+      [2, -1],
+      [2, 1],
+    ];
+    for (let i = 0; i < moves.length; i++) {
+      let curr = moves[i];
+      let curri = cki + curr[0];
+      let currj = ckj + curr[1];
+
+      if (curri >= 0 && curri < 8 && currj >= 0 && currj < 8) {
+        let name = currentBoard[curri][currj].src;
+        if (name?.includes("knight")) {
+          console.log("check");
+          console.log(`${name} , [${curri}][${currj}]`);
+          return false;
+        }
+      }
     }
     return true;
   };
