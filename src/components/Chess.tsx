@@ -15,6 +15,7 @@ const Chess = () => {
   //drag related variables
   const startingCoordinatesRef = useRef<{ i: number; j: number } | null>(null);
   const currentKingPosition = useRef<{ i: number; j: number }>({ i: 7, j: 4 });
+  const isCheck = useRef(false);
   /*
   const [startingPosition, setStartingPosition] = useState<Square>();
   const [endingPosition, setEndingPosition] = useState<Square>();
@@ -56,7 +57,11 @@ const Chess = () => {
     if (!start) return;
     const end = file.coordinates;
 
-    canMove(start, end) && swap(start, end);
+    const cki = currentKingPosition.current.i;
+    const ckj = currentKingPosition.current.j;
+
+    console.log(isInCheck(cki, ckj) ? "not in check" : "in check");
+    isInCheck(cki, ckj) && canMove(start, end) && swap(start, end);
   };
   const canMove = (
     start: { i: number; j: number },
@@ -256,13 +261,15 @@ const Chess = () => {
 
     setCurrentBoard(newBoard);
     startingCoordinatesRef.current = null;
+  };
 
-    const cki = currentKingPosition.current.i;
-    const ckj = currentKingPosition.current.j;
-    isInHorizontalCheck(cki, ckj);
-    isInVerticalCheck(cki, ckj);
-    isInDiagonalCheck(cki, ckj);
-    isInKnightCheck(cki, ckj);
+  const isInCheck = (cki: number, ckj: number) => {
+    return (
+      isInHorizontalCheck(cki, ckj) &&
+      isInVerticalCheck(cki, ckj) &&
+      isInDiagonalCheck(cki, ckj) &&
+      isInKnightCheck(cki, ckj)
+    );
   };
   const isInHorizontalCheck = (cki: number, ckj: number) => {
     //horizontals
@@ -271,8 +278,6 @@ const Chess = () => {
       //right
       const name = currentBoard[cki][j].src;
       if (name?.includes("queen-b") || name?.includes("rook-b")) {
-        console.log("check");
-        console.log(`${name} , [${cki}][${j}]`);
         return false;
       }
       j++;
@@ -282,8 +287,6 @@ const Chess = () => {
       //left
       const name = currentBoard[cki][j].src;
       if (name?.includes("queen-b") || name?.includes("rook-b")) {
-        console.log("check");
-        console.log(`${name} , [${cki}][${j}]`);
         return false;
       }
       j--;
@@ -388,9 +391,7 @@ const Chess = () => {
 
       if (curri >= 0 && curri < 8 && currj >= 0 && currj < 8) {
         let name = currentBoard[curri][currj].src;
-        if (name?.includes("knight")) {
-          console.log("check");
-          console.log(`${name} , [${curri}][${currj}]`);
+        if (name?.includes("knight-b")) {
           return false;
         }
       }
