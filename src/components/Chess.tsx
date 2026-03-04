@@ -60,8 +60,78 @@ const Chess = () => {
     const cki = currentKingPosition.current.i;
     const ckj = currentKingPosition.current.j;
 
-    console.log(isInCheck(cki, ckj) ? "not in check" : "in check");
-    isInCheck(cki, ckj) && canMove(start, end) && swap(start, end);
+    if (!isInCheck(cki, ckj, currentBoard)) {
+      console.log("inside for loop");
+      let tempCki = 0;
+      let tempCkj = 0;
+      //create simulation board and permit move
+      //find white king
+      const newBoard = simulateBoard(start, end);
+      for (let i = 0; i < newBoard.length; i++) {
+        for (let j = 0; j < newBoard[i].length; j++) {
+          if (newBoard[i][j].src?.includes("king-w")) {
+            console.log(`white king: [${i}][${j}]`);
+            tempCki = i;
+            tempCkj = j;
+            break;
+          }
+        }
+      }
+      console.log(
+        !isInCheck(tempCki, tempCkj, newBoard)
+          ? "it is in check"
+          : "its not in check",
+      );
+      if (!isInCheck) {
+        isCheck.current = false;
+      }
+      //if move results in check dont permit later move
+    }
+
+    //true means its not in check
+    if (!isInCheck(cki, ckj, currentBoard)) {
+      isCheck.current = true;
+    }
+    if (!isCheck.current) {
+      canMove(start, end) && swap(start, end);
+    }
+  };
+  useEffect(() => {
+    console.log("board refreshed.");
+  }, [currentBoard]);
+  const simulateBoard = (
+    start: { i: number; j: number },
+    end: { i: number; j: number },
+  ) => {
+    const newBoard = currentBoard.map((row) => [...row]);
+
+    const piece = newBoard[start.i][start.j].src;
+
+    newBoard[start.i][start.j].src = newBoard[end.i][end.j].src;
+    newBoard[end.i][end.j].src = piece;
+    return newBoard;
+  };
+  const pawnTaking = (
+    start: { i: number; j: number },
+    end: { i: number; j: number },
+  ) => {
+    const piece2: Pieces = currentBoard[end.i][end.j];
+    const piece2Name = piece2.src?.substring(11, piece2.src?.length - 4);
+    return Math.abs(start.i - end.i) && Math.abs(start.j - end.j)
+      ? piece2Name?.includes("-b")
+        ? true
+        : false
+      : false;
+  };
+  const taking = (
+    start: { i: number; j: number },
+    end: { i: number; j: number },
+  ) => {
+    const piece2: Pieces = currentBoard[end.i][end.j];
+    const piece2Name = piece2.src?.substring(11, piece2.src?.length - 4);
+    return piece2Name?.includes(
+      currentBoard[start.i][start.j].src?.includes("-b") ? "-w" : "-b",
+    );
   };
   const canMove = (
     start: { i: number; j: number },
@@ -82,13 +152,7 @@ const Chess = () => {
         const pawnCondition3 = checkPawnCollisions(start, end); //checks collisions
 
         //piece taking logic
-
-        const pawnCondition4 =
-          Math.abs(start.i - end.i) && Math.abs(start.j - end.j)
-            ? piece2Name?.includes("-b")
-              ? true
-              : false
-            : false;
+        const pawnCondition4 = pawnTaking(start, end);
         if (pawnCondition4) {
           currentBoard[end.i][end.j].src = null;
         }
@@ -104,7 +168,7 @@ const Chess = () => {
         const rookCondition1 = start.i === end.i;
         const rookCondition2 = start.j === end.j;
         const rookCondition3 = checkRookCollisions(start, end);
-        const rookCondition4 = piece2Name?.includes("-b");
+        const rookCondition4 = taking(start, end);
         if (rookCondition4) {
           currentBoard[end.i][end.j].src = null;
         }
@@ -120,7 +184,7 @@ const Chess = () => {
           Math.abs(start.i - end.i) === 1 && Math.abs(start.j - end.j) === 2;
         const knightCondition2 =
           Math.abs(start.j - end.j) === 1 && Math.abs(start.i - end.i) === 2;
-        const knightCondition3 = piece2Name?.includes("-b");
+        const knightCondition3 = taking(start, end);
         if (knightCondition3) {
           currentBoard[end.i][end.j].src = null;
         }
@@ -133,7 +197,7 @@ const Chess = () => {
         const bishopCondition1 =
           Math.abs(start.i - end.i) === Math.abs(start.j - end.j);
         const bishopCondition2 = checkBishopCollisions(start, end);
-        const bishopCondition3 = piece2Name?.includes("-b");
+        const bishopCondition3 = taking(start, end);
         if (bishopCondition3) {
           currentBoard[end.i][end.j].src = null;
         }
@@ -149,7 +213,7 @@ const Chess = () => {
         const queenCondition2 = start.i === end.i || start.j === end.j;
         const queenCondition3 = checkBishopCollisions(start, end);
         const queenCondition4 = checkRookCollisions(start, end);
-        const queenCondition5 = piece2Name?.includes("-b");
+        const queenCondition5 = taking(start, end);
         if (queenCondition5) {
           currentBoard[end.i][end.j].src = null;
         }
@@ -166,7 +230,7 @@ const Chess = () => {
           start.j === end.j && Math.abs(start.i - end.i) === 1;
         const kingCondition3 =
           Math.abs(start.i - end.i) === 1 && Math.abs(start.j - end.j) === 1;
-        const kingCondition4 = piece2Name?.includes("-b");
+        const kingCondition4 = taking(start, end);
         if (kingCondition4) {
           currentBoard[end.i][end.j].src = null;
         }
@@ -261,22 +325,25 @@ const Chess = () => {
 
     setCurrentBoard(newBoard);
     startingCoordinatesRef.current = null;
+
+    console.log(`start: [${start.i}][${start.j}]`);
+    console.log(`end: [${end.i}][${end.j}]`);
   };
 
-  const isInCheck = (cki: number, ckj: number) => {
+  const isInCheck = (cki: number, ckj: number, board: Square[][]) => {
     return (
-      isInHorizontalCheck(cki, ckj) &&
-      isInVerticalCheck(cki, ckj) &&
-      isInDiagonalCheck(cki, ckj) &&
-      isInKnightCheck(cki, ckj)
+      isInHorizontalCheck(cki, ckj, board) &&
+      isInVerticalCheck(cki, ckj, board) &&
+      isInDiagonalCheck(cki, ckj, board) &&
+      isInKnightCheck(cki, ckj, board)
     );
   };
-  const isInHorizontalCheck = (cki: number, ckj: number) => {
+  const isInHorizontalCheck = (cki: number, ckj: number, board: Square[][]) => {
     //horizontals
     let j = ckj + 1;
     while (j < 8) {
       //right
-      const name = currentBoard[cki][j].src;
+      const name = board[cki][j].src;
       if (name?.includes("queen-b") || name?.includes("rook-b")) {
         return false;
       }
@@ -285,7 +352,7 @@ const Chess = () => {
     j = ckj - 1;
     while (j >= 0) {
       //left
-      const name = currentBoard[cki][j].src;
+      const name = board[cki][j].src;
       if (name?.includes("queen-b") || name?.includes("rook-b")) {
         return false;
       }
@@ -293,11 +360,11 @@ const Chess = () => {
     }
     return true;
   };
-  const isInVerticalCheck = (cki: number, ckj: number) => {
+  const isInVerticalCheck = (cki: number, ckj: number, board: Square[][]) => {
     let i = cki + 1;
     while (i < 8) {
       //down
-      const name = currentBoard[i][ckj].src;
+      const name = board[i][ckj].src;
       if (name?.includes("queen-b") || name?.includes("rook-b")) {
         console.log("check");
         console.log(`${name} , [${i}][${ckj}]`);
@@ -308,7 +375,7 @@ const Chess = () => {
     i = cki - 1;
     while (i >= 0) {
       //up
-      const name = currentBoard[i][ckj].src;
+      const name = board[i][ckj].src;
       if (name?.includes("queen-b") || name?.includes("rook-b")) {
         console.log("check");
         console.log(`${name} , [${i}][${ckj}]`);
@@ -318,12 +385,12 @@ const Chess = () => {
     }
     return true;
   };
-  const isInDiagonalCheck = (cki: number, ckj: number) => {
+  const isInDiagonalCheck = (cki: number, ckj: number, board: Square[][]) => {
     let i = cki + 1;
     let j = ckj + 1;
     while (i < 8 && j < 8) {
       //right-down
-      const name = currentBoard[i][j].src;
+      const name = board[i][j].src;
       if (name?.includes("queen-b") || name?.includes("bishop-b")) {
         console.log("check");
         console.log(`${name} , [${i}][${j}]`);
@@ -336,7 +403,7 @@ const Chess = () => {
     j = ckj + 1;
     while (i >= 0 && j < 8) {
       //right-up
-      const name = currentBoard[i][j].src;
+      const name = board[i][j].src;
       if (name?.includes("queen-b") || name?.includes("bishop-b")) {
         console.log("check");
         console.log(`${name} , [${i}][${j}]`);
@@ -349,7 +416,7 @@ const Chess = () => {
     i = cki + 1;
     j = ckj - 1;
     while (i < 8 && j >= 0) {
-      const name = currentBoard[i][j].src;
+      const name = board[i][j].src;
       if (name?.includes("queen-b") || name?.includes("bishop-b")) {
         console.log("check");
         console.log(`${name} , [${i}][${j}]`);
@@ -362,7 +429,7 @@ const Chess = () => {
     i = cki - 1;
     j = ckj - 1;
     while (i >= 0 && j >= 0) {
-      const name = currentBoard[i][j].src;
+      const name = board[i][j].src;
       if (name?.includes("queen-b") || name?.includes("bishop-b")) {
         console.log("check");
         console.log(`${name} , [${i}][${j}]`);
@@ -373,7 +440,7 @@ const Chess = () => {
     }
     return true;
   };
-  const isInKnightCheck = (cki: number, ckj: number) => {
+  const isInKnightCheck = (cki: number, ckj: number, board: Square[][]) => {
     const moves = [
       [-2, -1],
       [-2, 1],
@@ -390,7 +457,7 @@ const Chess = () => {
       let currj = ckj + curr[1];
 
       if (curri >= 0 && curri < 8 && currj >= 0 && currj < 8) {
-        let name = currentBoard[curri][currj].src;
+        let name = board[curri][currj].src;
         if (name?.includes("knight-b")) {
           return false;
         }
