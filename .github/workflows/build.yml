@@ -10,6 +10,11 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+      pages: write
+      actions: read
 
     steps:
       # downloads the repo onto the vm
