@@ -2,12 +2,16 @@
   "name": "chess-clone",
   "private": true,
   "version": "0.0.0",
+  "homepage": "https://st10477835.github.io/chess-clone/",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build react-scripts build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
+    "start": "react-scripts start"
   },
   "dependencies": {
     "react": "^19.2.0",

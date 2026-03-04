@@ -21,6 +21,12 @@ jobs:
     steps:
       # downloads the repo onto the vm
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build application
+        run: npm run build
 
       - uses: actions/configure-pages@v4
 
